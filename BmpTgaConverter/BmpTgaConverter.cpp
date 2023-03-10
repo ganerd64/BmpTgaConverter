@@ -5,22 +5,25 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <memory>
 
 int main()
 {
-    const std::string FilePath = "../Convert/testImage.png";
-    std::ifstream readfile(FilePath, std::ios::binary);
+    const std::string FilePath = "../Convert/testImage.bmp";
+    std::ifstream readfile(FilePath, std::ios::in | std::ios::binary);
 
     if (readfile) {
         std::cout << "success\n";
 
+        // ファイルの大きさを測る
         readfile.seekg(0, std::ios::end);
         long long int size = readfile.tellg();
         readfile.seekg(0);
 
         //読み込んだデータをchar型に出力する
-        char* data = new char[size];
-        readfile.read(data, size);
+        std::unique_ptr<char[]> data = std::make_unique<char[]>(size);
+        const auto address = data.get();
+        readfile.read(data.get(), size);
 
         int a = 0;
     }
