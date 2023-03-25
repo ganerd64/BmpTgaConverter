@@ -36,34 +36,3 @@ T reverseEndian(T& val)
     std::reverse(first, last);
     return val;
 }
-
-
-
-//class ImageDataReader
-//{
-//public:
-//    ImageDataReader() = default;
-//    ~ImageDataReader() = default;
-//
-//public:
-//
-//    // バイナリデータからパラメータを取得する
-//    // [in] binary バイナリデータの先頭アドレス
-//    // [in] binarySize バイナリデータサイズ
-//    // [return]    true:取得成功
-//    // [return]    false:取得失敗
-//    //virtual bool getParamsFromBinary(char& binary, const long long int& binarySize) = 0;
-//
-//protected:
-//
-//    // バイナリデータからTのサイズ分イテレータを進めてvalに値を取得させる
-//    // [out] val 取得した値が入る
-//    // [in] binary バイナリデータ
-//    // [return] binaryからTのサイズ分進めたイテレータが返る
-//    template<class T>
-//    char* getParamFromBinary(T& val, char& binary);
-//
-//    // エンディアンの反転処理
-//    template<class T>
-//    T reverseEndian(T& val);
-//};

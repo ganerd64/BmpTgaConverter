@@ -2,6 +2,7 @@
 // BMPファイルのデータを読み取り、情報を格納するクラス
 ////////////////////////////////////////////////////////////
 #include <iostream>
+#include <vector> 
 #include "../include/BinaryDataReadAPI.h"
 #pragma once
 
@@ -19,6 +20,27 @@ public:
         unsigned short	bfReserved1_ = 0;
         unsigned short	bfReserved2_ = 0;
         unsigned long   bfOffBits_ = 0;
+    };
+    struct Information
+    {
+        unsigned long   biSize_ = 0;
+        long            biWidth_ = 0;
+        long            biHeight_ = 0;
+        unsigned short  biPlanes_ = 0;
+        unsigned short  biBitCount_ = 0;
+        unsigned long   biCompression_ = 0;
+        unsigned long   biSizeImage_ = 0;
+        long            biXPixPerMeter_ = 0;
+        long            biYPixPerMeter_ = 0;
+        unsigned long   biClrUsed_ = 0;
+        unsigned long   biCirImportant_ = 0;
+    };
+    struct color
+    {
+        unsigned char r_ = 0;
+        unsigned char g_ = 0;
+        unsigned char b_ = 0;
+        unsigned char reserve_ = 0;
     };
 
 public:
@@ -41,7 +63,17 @@ public:
     Header getHeader() const;
 
 private:
+
+    // 画像の色データの上下を反転させる
+    // [in] width   画像横サイズ
+    // [in] height  画像縦サイズ
+    // [in/out] colorDatas バイナリデータの先頭アドレス
+    void flipVerticalColorDatas(int width, int height, std::vector<color>& colorDatas);
+
+private:
     Header header_{};
+    Information info_{};
+    std::vector<color> colorDatas_;
 };
 
 
