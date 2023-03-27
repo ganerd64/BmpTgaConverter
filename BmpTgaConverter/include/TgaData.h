@@ -6,37 +6,36 @@
 #include "../include/ImageData.h"
 #pragma once
 
-class BmpData : public ImageData
+class TgaData : ImageData
 {
 public:
-    BmpData() = default;
-    ~BmpData() = default;
+    TgaData() = default;
+    ~TgaData() = default;
 
     struct Header
     {
-        char            bfType1_ = 0;
-        char            bfType2_ = 0;
-        unsigned long   bfSize_ = 0;
-        unsigned short	bfReserved1_ = 0;
-        unsigned short	bfReserved2_ = 0;
-        unsigned long   bfOffBits_ = 0;
+        char                idFieldLength_  = 0;
+        char                colorMapType_   = 0;
+        char                imageType_      = 0;
+        unsigned short      colorMapIndex_  = 0;
+        unsigned short      colorMapLength_ = 0;
+        char                colorMapSize_   = 0;
+        unsigned short      imageOriginX_   = 0;
+        unsigned short      imageOriginY_   = 0;
+        unsigned short      imageWitdth_    = 0;
+        unsigned short      imageHeight_    = 0;
+        char                bitPerPixel_    = 0;
+        char                discripter_     = 0;
     };
-    struct Information
+    struct Footer
     {
-        unsigned long   biSize_ = 0;
-        long            biWidth_ = 0;
-        long            biHeight_ = 0;
-        unsigned short  biPlanes_ = 0;
-        unsigned short  biBitCount_ = 0;
-        unsigned long   biCompression_ = 0;
-        unsigned long   biSizeImage_ = 0;
-        long            biXPixPerMeter_ = 0;
-        long            biYPixPerMeter_ = 0;
-        unsigned long   biClrUsed_ = 0;
-        unsigned long   biCirImportant_ = 0;
+        long    filePosition_ = 0;
+        long    developerDirectoryFilePosition_ = 0;
+        char    truevisionTargaCharacter_[17] = "TRUEVISION-TARGA";
+        char    eof_ = 0;
     };
-public:
 
+public:
     // バイナリデータからパラメータを取得する
     // [in] binary バイナリデータの先頭アドレス
     // [in] binarySize バイナリデータサイズ
@@ -47,6 +46,11 @@ public:
     // ヘッダデータを取得
     Header getHeader() const;
 
+    // ヘッダデータを設定
+    //void setHeader(const Header& header);
+
+    //void setColorDatas(const std::vector<Color>& colorDatas);
+
 private:
 
     // 画像の色データの上下を反転させる
@@ -56,9 +60,8 @@ private:
     void flipVerticalColorDatas(int width, int height, std::vector<Color>& colorDatas);
 
 private:
-    Header header_{};
-    Information info_{};
-    std::vector<Color> colorDatas_;
+    Header header_{}; 
+    Footer footer_{};
 };
 
 

@@ -14,7 +14,7 @@ public:
     // fileName ファイル名
     // result   true:読み取り成功
     // result   false:読み取り失敗
-    bool fileLoadBinary(std::string& fileName);
+    bool fileLoadBinary(std::string_view fileName);
 
     // 読み取ったファイルデータの先頭アドレスを取得
     char* getLoadDataTopAddress() const;

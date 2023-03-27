@@ -13,7 +13,7 @@
 #pragma once
 
 namespace detail {
-    std::string ReadFilePath("../Convert/testImage.bmp");
+    constexpr std::string_view ReadFilePath("../Convert/testImage.bmp");
 }
 
 int main()

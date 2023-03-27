@@ -4,9 +4,9 @@
 ////////////////////////////////////////////////////////////
 // ファイルの読み込みを行う
 ////////////////////////////////////////////////////////////
-bool FileLoader::fileLoadBinary(std::string& fileName)
+bool FileLoader::fileLoadBinary(std::string_view fileName)
 {
-    std::ifstream readfile(fileName, std::ios::in | std::ios::binary);
+    std::ifstream readfile(fileName.data(), std::ios::in | std::ios::binary);
 
     if (readfile) {
         // ファイルの大きさを測る
