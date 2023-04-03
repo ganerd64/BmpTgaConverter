@@ -45,15 +45,13 @@ public:
     bool getParamsFromBinary(char& binary, const long long int& binarySize);
 
     // ヘッダデータを取得
-    Header getHeader() const;
+    const Header& getHeader() const;
 
-private:
+    // 情報データを取得
+    const Information& getInformation() const;
 
-    // 画像の色データの上下を反転させる
-    // [in] width   画像横サイズ
-    // [in] height  画像縦サイズ
-    // [in/out] colorDatas バイナリデータの先頭アドレス
-    void flipVerticalColorDatas(int width, int height, std::vector<Color>& colorDatas);
+    // 色データを取得
+    const std::vector<Color>& getColorDatas() const;
 
 private:
     Header header_{};

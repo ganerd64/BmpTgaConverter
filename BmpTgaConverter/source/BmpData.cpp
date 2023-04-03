@@ -36,63 +36,50 @@ bool BmpData::getParamsFromBinary(char& binary, const long long int& binarySize)
     binaryItr = getParamFromBinary(info_.biCirImportant_, *binaryItr);
 
     // 色データ取得処理
-    // 色データの横サイズは4バイトの倍数になるように保管される
-    int actualWidthSize = info_.biWidth_ + (4 - (info_.biWidth_ % 4));
-    long int imageDataSize = actualWidthSize * info_.biHeight_;
+    long int imageDataSize = info_.biWidth_ * info_.biHeight_;
     colorDatas_.reserve(imageDataSize);
 
+    // 色データの横サイズは4バイトの倍数になるように保管される
+    int actualWidthSize = info_.biWidth_ + (4 - (info_.biWidth_ % 4));
     Color tmpColor;
-    for (int i = 0; i < imageDataSize; ++i) {
-        binaryItr = getParamFromBinary(tmpColor.r_, *binaryItr);
-        binaryItr = getParamFromBinary(tmpColor.g_, *binaryItr);
-        binaryItr = getParamFromBinary(tmpColor.b_, *binaryItr);
-        colorDatas_.push_back(tmpColor);
+    for (int i = 0; i < info_.biHeight_; ++i) {
+        for (int j = 0; j < actualWidthSize; ++j) {
+            binaryItr = getParamFromBinary(tmpColor.r_, *binaryItr);
+            binaryItr = getParamFromBinary(tmpColor.g_, *binaryItr);
+            binaryItr = getParamFromBinary(tmpColor.b_, *binaryItr);
+            if (j < info_.biWidth_) {
+                colorDatas_.push_back(tmpColor);
+            }
+        }
     }
 
-    // BMPファイルの色データは上下が反転している状態なのでこちらで反転させる
-    flipVerticalColorDatas(actualWidthSize, info_.biHeight_, colorDatas_);
+    // BMPファイルの色データは上下が反転している状態なので必要であれば反転させる
+    //flipVerticalColorDatas(info_.biWidth_, info_.biHeight_, colorDatas_);
+
     return true;
 }
 
 ////////////////////////////////////////////////////////////
 // ヘッダデータを取得
 ////////////////////////////////////////////////////////////
-BmpData::Header BmpData::getHeader() const
+const BmpData::Header& BmpData::getHeader() const
 {
     return header_;
 }
 
 ////////////////////////////////////////////////////////////
-// 画像の色データの上下を反転させる
+// 情報データを取得
 ////////////////////////////////////////////////////////////
-void BmpData::flipVerticalColorDatas(int width, int height, std::vector<Color>& colorDatas)
+const BmpData::Information& BmpData::getInformation() const
 {
-    if (colorDatas.empty()) {
-        return;
-    }
-    int totalSize = width * height;
-    if (colorDatas.size() < totalSize) {
-        return;
-    }
-    
-    // 上下反転させるには上半分と下半分の色データにアクセスして入れ替えていく
-    int halfHeight = static_cast<int>(height / 2);
-
-    for (int i = 0; i < halfHeight; ++i) {
-        for (int j = 0; j < width; ++j) {
-            // 上側の入れ替え位置を計算する
-            int swapUpPos = (width * i) + j;
-            
-            // 下側の入れ替え位置を計算する
-            int swapDownPos = (height - 1 - i) * width + j;
-            
-            // 下側の入れ替え位置の計算は難しいので別解をおいておく
-            //int swapDownPos = (totalSize) + j - ((width) * (i + 1));
-
-            Color temp;
-            temp = colorDatas[swapUpPos];
-            colorDatas[swapUpPos] = colorDatas[swapDownPos];
-            colorDatas[swapDownPos] = temp;
-        }
-    }
+    return info_;
 }
+
+////////////////////////////////////////////////////////////
+// 色データを取得
+////////////////////////////////////////////////////////////
+const std::vector<ImageData::Color>& BmpData::getColorDatas() const
+{
+    return colorDatas_;
+}
+

@@ -11,7 +11,16 @@ class TgaData : ImageData
 public:
     TgaData() = default;
     ~TgaData() = default;
-
+    enum ImageType
+    {
+        None = 0,
+        IndexColor,
+        FullColor,
+        Gray,
+        IndexColorRLE,
+        FullColorRLE,
+        GrayRLE,
+    };
     struct Header
     {
         char                idFieldLength_  = 0;
@@ -31,7 +40,7 @@ public:
     {
         long    filePosition_ = 0;
         long    developerDirectoryFilePosition_ = 0;
-        char    truevisionTargaCharacter_[17] = "TRUEVISION-TARGA";
+        char    trueVisionTargaCharacter_[17] = "TRUEVISION-TARGA";
         char    eof_ = 0;
     };
 
@@ -44,24 +53,26 @@ public:
     bool getParamsFromBinary(char& binary, const long long int& binarySize);
 
     // ヘッダデータを取得
-    Header getHeader() const;
+    const Header& getHeader() const;
 
     // ヘッダデータを設定
-    //void setHeader(const Header& header);
+    // [in] width 画像データの横幅
+    // [in] height 画像データの縦幅
+    // [in] colorByteVal 色データの使用バイト数
+    void setHeader(unsigned short width, unsigned short height, char colorByteVal);
 
-    //void setColorDatas(const std::vector<Color>& colorDatas);
+    // 色データを設定
+    // [in] colorDatas 色データ
+    void setColorDatas(const std::vector<Color>& colorDatas);
 
-private:
-
-    // 画像の色データの上下を反転させる
-    // [in] width   画像横サイズ
-    // [in] height  画像縦サイズ
-    // [in/out] colorDatas バイナリデータの先頭アドレス
-    void flipVerticalColorDatas(int width, int height, std::vector<Color>& colorDatas);
+    // 指定ファイルにTGAデータを出力する
+    // [in] fileName 出力するファイルパスとファイル名
+    void outputTgaData(std::string_view fileName);
 
 private:
     Header header_{}; 
     Footer footer_{};
+    std::vector<Color> colorDatas_;
 };
 
 
