@@ -15,7 +15,7 @@
 
 namespace detail {
     // todo:Convertフォルダの中にあるファイルを取得してコンバートすること
-    constexpr std::string_view ReadFilePath("../Convert/testImage.bmp");
+    constexpr std::string_view ReadFilePath("../Convert/testImage3.bmp");
     constexpr std::string_view OutputFilePath("../Result/testImage.tga");
 }
 
