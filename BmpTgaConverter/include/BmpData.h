@@ -12,28 +12,47 @@ public:
     BmpData() = default;
     ~BmpData() = default;
 
+    enum InfoCategory
+    {
+        Bi = 40,
+        B4 = 108,
+        B5 = 124,
+    };
     struct Header
     {
-        char            bfType1_ = 0;
-        char            bfType2_ = 0;
-        unsigned long   bfSize_ = 0;
+        char            bfType1_     = 0;
+        char            bfType2_     = 0;
+        unsigned long   bfSize_      = 0;
         unsigned short	bfReserved1_ = 0;
         unsigned short	bfReserved2_ = 0;
-        unsigned long   bfOffBits_ = 0;
+        unsigned long   bfOffBits_   = 0;
     };
     struct Information
     {
-        unsigned long   biSize_ = 0;
-        long            biWidth_ = 0;
-        long            biHeight_ = 0;
-        unsigned short  biPlanes_ = 0;
-        unsigned short  biBitCount_ = 0;
-        unsigned long   biCompression_ = 0;
-        unsigned long   biSizeImage_ = 0;
-        long            biXPixPerMeter_ = 0;
-        long            biYPixPerMeter_ = 0;
-        unsigned long   biClrUsed_ = 0;
-        unsigned long   biCirImportant_ = 0;
+        unsigned long   biSize_             = 0;
+        long            biWidth_            = 0;
+        long            biHeight_           = 0;
+        unsigned short  biPlanes_           = 0;
+        unsigned short  biBitCount_         = 0;
+        unsigned long   biCompression_      = 0;
+        unsigned long   biSizeImage_        = 0;
+        long            biXPixPerMeter_     = 0;
+        long            biYPixPerMeter_     = 0;
+        unsigned long   biClrUsed_          = 0;
+        unsigned long   biCirImportant_     = 0;
+        long            bV4RedMask_         = 0;
+        long            bV4GreenMask_       = 0;
+        long            bV4BlueMask_        = 0;
+        long            bV4AlphaMask_       = 0;
+        long            bV4CSType_          = 0;
+        char            bV4Endpoints_[36]   = "";
+        long            bV4GammaRed_        = 0;
+        long            bV4GammaGreen_      = 0;
+        long            bV4GammaBlue_       = 0;
+        long            bV5Intent_          = 0;
+        long            bV5ProfileData_     = 0;
+        long            bV5ProfileSize_     = 0;
+        long            bV5Reserved_        = 0;
     };
 public:
 

@@ -13,6 +13,43 @@ namespace detail {
 ////////////////////////////////////////////////////////////
 bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
 {
+    char* binaryItr = reinterpret_cast<char*>(&binary);
+
+    // ヘッダデータ取得処理
+    binaryItr = getParamFromBinary(header_.idFieldLength_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.colorMapType_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.imageType_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.colorMapIndex_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.colorMapLength_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.colorMapSize_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.imageOriginX_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.imageOriginY_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.imageWitdth_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.imageHeight_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.bitPerPixel_, *binaryItr);
+    binaryItr = getParamFromBinary(header_.discripter_, *binaryItr);
+
+    // 色データ取得処理
+    long int imageDataSize = header_.imageWitdth_ * header_.imageHeight_;
+    colorDatas_.reserve(imageDataSize);
+    Color tmpColor;
+    for (int i = 0; i < header_.imageWitdth_; ++i) {
+        for (int j = 0; j < header_.imageHeight_; ++j) {
+            binaryItr = getParamFromBinary(tmpColor.r_, *binaryItr);
+            binaryItr = getParamFromBinary(tmpColor.g_, *binaryItr);
+            binaryItr = getParamFromBinary(tmpColor.b_, *binaryItr);
+            colorDatas_.push_back(tmpColor);
+        }
+    }
+
+    // 情報データ取得処理
+    binaryItr = getParamFromBinary(footer_.filePosition_, *binaryItr);
+    binaryItr = getParamFromBinary(footer_.developerDirectoryFilePosition_, *binaryItr);
+    for (auto& charData : footer_.trueVisionTargaCharacter_) {
+        binaryItr = getParamFromBinary(charData, *binaryItr);
+    }
+    binaryItr = getParamFromBinary(footer_.eof_, *binaryItr);
+
     return true;
 }
 

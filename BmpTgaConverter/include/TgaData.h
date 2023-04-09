@@ -11,6 +11,7 @@ class TgaData : ImageData
 public:
     TgaData() = default;
     ~TgaData() = default;
+
     enum ImageType
     {
         None = 0,
