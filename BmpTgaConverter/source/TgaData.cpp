@@ -29,8 +29,30 @@ bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
     binaryItr = getParamFromBinary(header_.bitPerPixel_, *binaryItr);
     binaryItr = getParamFromBinary(header_.discripter_, *binaryItr);
 
+    int colorUseByte = 0;
+    {
+        if (header_.bitPerPixel_ == static_cast<char>(ColorBitType::Bit24)) {
+            colorUseByte = static_cast<int>(ColorUseByteSize::Bit24UseByte);
+        }
+        else if (header_.bitPerPixel_ == static_cast<char>(ColorBitType::Bit32)) {
+            colorUseByte = static_cast<int>(ColorUseByteSize::Bit32UseByte);
+        }
+        else {
+            // ピクセルのビット数が24bitと32bitの時以外は対応しない
+            header_ = {};
+            return false;
+        }
+
+        // 非圧縮フルカラーのみ対応
+        if (header_.imageType_ != ImageType::FullColor) {
+            header_ = {};
+            return false;
+        }
+    }
+
+
     // 色データ取得処理
-    long int imageDataSize = header_.imageWitdth_ * header_.imageHeight_;
+    long long int imageDataSize = header_.imageWitdth_ * header_.imageHeight_;
     colorDatas_.reserve(imageDataSize);
     Color tmpColor;
     for (int i = 0; i < header_.imageWitdth_; ++i) {
@@ -38,6 +60,9 @@ bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
             binaryItr = getParamFromBinary(tmpColor.r_, *binaryItr);
             binaryItr = getParamFromBinary(tmpColor.g_, *binaryItr);
             binaryItr = getParamFromBinary(tmpColor.b_, *binaryItr);
+            if (colorUseByte == static_cast<int>(ColorUseByteSize::Bit32UseByte)) {
+                binaryItr = setParamToBinary(tmpColor.reserve_, *binaryItr);
+            }
             colorDatas_.push_back(tmpColor);
         }
     }
@@ -54,29 +79,14 @@ bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
 }
 
 ////////////////////////////////////////////////////////////
-// ヘッダデータを取得
-////////////////////////////////////////////////////////////
-const TgaData::Header& TgaData::getHeader() const
-{
-    return header_;
-}
-
-////////////////////////////////////////////////////////////
 // ヘッダデータを設定
 ////////////////////////////////////////////////////////////
-void TgaData::setHeader(unsigned short width, unsigned short height, char colorByteVal)
+void TgaData::setOutputParam(unsigned short width, unsigned short height, char colorUseBitVal, const std::vector<Color>& colorDatas)
 {
     header_.imageType_ = static_cast<char>(ImageType::FullColor);
     header_.imageWitdth_ = width;
     header_.imageHeight_ = height;
-    header_.bitPerPixel_ = colorByteVal;
-}
-
-////////////////////////////////////////////////////////////
-// 色データを設定
-////////////////////////////////////////////////////////////
-void TgaData::setColorDatas(const std::vector<Color>& colorDatas)
-{
+    header_.bitPerPixel_ = colorUseBitVal;
     colorDatas_ = colorDatas;
 }
 
@@ -148,4 +158,21 @@ void TgaData::outputTgaData(std::string_view fileName)
 
     // バイナリとして書き込む
     ofs.write(outputData.get(), totalDataSize);
+}
+
+////////////////////////////////////////////////////////////
+// ヘッダデータを取得
+////////////////////////////////////////////////////////////
+const TgaData::Header& TgaData::getHeader() const
+{
+    return header_;
+}
+
+
+////////////////////////////////////////////////////////////
+// 色データを取得
+////////////////////////////////////////////////////////////
+const std::vector<ImageData::Color>& TgaData::getColorDatas() const
+{
+    return colorDatas_;
 }

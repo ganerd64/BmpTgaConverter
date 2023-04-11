@@ -72,6 +72,16 @@ public:
     // 色データを取得
     const std::vector<Color>& getColorDatas() const;
 
+    // 出力時に必要なデータを設定
+    // [in] width 画像データの横幅
+    // [in] height 画像データの縦幅
+    // [in] colorUseByteType 色データの使用ビット数
+    void setOutputParam(unsigned short width, unsigned short height, char colorUseBitVal, const std::vector<Color>& colorDatas);
+
+    // 指定ファイルにBMPデータを出力する
+    // [in] fileName 出力するファイルパスとファイル名
+    void outputBmpData(std::string_view fileName);
+
 private:
     Header header_{};
     Information info_{};
