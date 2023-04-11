@@ -82,4 +82,5 @@ protected:
     // [in] height  画像縦サイズ
     // [in/out] colorDatas バイナリデータの先頭アドレス
     void flipVerticalColorDatas(int width, int height, std::vector<Color>& colorDatas);
+
 };

@@ -15,8 +15,8 @@
 
 namespace detail {
     // todo:Convertフォルダの中にあるファイルを取得してコンバートすること
-    constexpr std::string_view ReadFilePath("../Convert/testImage3.bmp");
-    constexpr std::string_view OutputFilePath("../Result/testImage.tga");
+    constexpr std::string_view ReadFilePath("../Convert/testImage.tga");
+    constexpr std::string_view OutputFilePath("../Result/testImage.bmp");
 }
 
 int main()
@@ -29,22 +29,37 @@ int main()
             return 0;
         }
 
-        // ファイルからBMPデータを読み込む
-        BmpData bmpData;
         auto binary = file.getLoadDataTopAddress();
         auto size = file.getLeadDataSize();
-        bmpData.getParamsFromBinary(*binary, size);
-
-        // 読み取ったBMPデータを使ってTGAデータを出力する
+        // ファイルからデータを読み込む
+        BmpData bmpData;
         TgaData tgaData;
-        const auto& bmpInfo = bmpData.getInformation();
-        tgaData.setHeader(
-            static_cast<unsigned short>(bmpInfo.biWidth_),
-            static_cast<unsigned short>(bmpInfo.biHeight_),
-            static_cast<char>(bmpInfo.biBitCount_)
-        );
-        tgaData.setColorDatas(bmpData.getColorDatas());
-        tgaData.outputTgaData(detail::OutputFilePath);
+        if (bmpData.getParamsFromBinary(*binary, size)) {
+            // 読み取ったBMPデータを使ってTGAデータを出力する
+            const auto& bmpInfo = bmpData.getInformation();
+            tgaData.setOutputParam(
+                static_cast<unsigned short>(bmpInfo.biWidth_),
+                static_cast<unsigned short>(bmpInfo.biHeight_),
+                static_cast<char>(bmpInfo.biBitCount_),
+                bmpData.getColorDatas()
+            );
+            tgaData.outputTgaData(detail::OutputFilePath);
+        }
+        else if (tgaData.getParamsFromBinary(*binary, size)) {
+            // 読み取ったTGAデータを使ってBMPデータを出力する
+            const auto& tgaHeader = tgaData.getHeader();
+            bmpData.setOutputParam(
+                static_cast<unsigned short>(tgaHeader.imageWitdth_),
+                static_cast<unsigned short>(tgaHeader.imageHeight_),
+                static_cast<char>(tgaHeader.bitPerPixel_),
+                tgaData.getColorDatas()
+            );
+            bmpData.outputBmpData(detail::OutputFilePath);
+        }
+        else {
+            std::cout << "ファイルが読み込めませんでした" << "\n";
+            std::cout << "対応していない形式のファイルです" << "\n";
+        }
     }
     else {
         std::cout << "ファイルが読み込めませんでした" << "\n";

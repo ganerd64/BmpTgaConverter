@@ -53,22 +53,22 @@ public:
     // [return]    false:取得失敗
     bool getParamsFromBinary(char& binary, const long long int& binarySize);
 
-    // ヘッダデータを取得
-    const Header& getHeader() const;
-
-    // ヘッダデータを設定
+    // 出力時に必要なデータを設定
     // [in] width 画像データの横幅
     // [in] height 画像データの縦幅
-    // [in] colorByteVal 色データの使用バイト数
-    void setHeader(unsigned short width, unsigned short height, char colorByteVal);
-
-    // 色データを設定
+    // [in] colorUseBitVal 色データの使用ビット数
     // [in] colorDatas 色データ
-    void setColorDatas(const std::vector<Color>& colorDatas);
+    void setOutputParam(unsigned short width, unsigned short height, char colorUseBitVal, const std::vector<Color>& colorDatas);
 
     // 指定ファイルにTGAデータを出力する
     // [in] fileName 出力するファイルパスとファイル名
     void outputTgaData(std::string_view fileName);
+
+    // ヘッダデータを取得
+    const Header& getHeader() const;
+
+    // 色データを取得
+    const std::vector<Color>& getColorDatas() const;
 
 private:
     Header header_{}; 
