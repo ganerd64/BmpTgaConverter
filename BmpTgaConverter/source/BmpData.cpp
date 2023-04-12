@@ -34,15 +34,16 @@ bool BmpData::getParamsFromBinary(char& binary, const long long int& binarySize)
     {
         binaryItr = getParamFromBinary(header_.bfType1_, *binaryItr);
         binaryItr = getParamFromBinary(header_.bfType2_, *binaryItr);
-        if (header_.bfType1_ != detail::BfType[0] || header_.bfType2_ != detail::BfType[1]) {
-            header_ = {};
-            return false;
-        }
-
         binaryItr = getParamFromBinary(header_.bfSize_, *binaryItr);
         binaryItr = getParamFromBinary(header_.bfReserved1_, *binaryItr);
         binaryItr = getParamFromBinary(header_.bfReserved2_, *binaryItr);
         binaryItr = getParamFromBinary(header_.bfOffBits_, *binaryItr);
+
+        // BMPデータか確認
+        if (header_.bfType1_ != detail::BfType[0] || header_.bfType2_ != detail::BfType[1]) {
+            header_ = {};
+            return false;
+        }
     }
 
     // 情報データ取得処理
@@ -65,7 +66,7 @@ bool BmpData::getParamsFromBinary(char& binary, const long long int& binarySize)
             binaryItr = getParamFromBinary(info_.bV4AlphaMask_, *binaryItr);
             binaryItr = getParamFromBinary(info_.bV4CSType_, *binaryItr);
             for (auto& data : info_.bV4Endpoints_) {
-                // 使わないデータなのでバイト数分回して取得しています
+                // 使わないデータなのでバイト数分回してイテレータを進めています
                 binaryItr = getParamFromBinary(data, *binaryItr);
             }
             binaryItr = getParamFromBinary(info_.bV4GammaRed_, *binaryItr);
@@ -112,7 +113,6 @@ bool BmpData::getParamsFromBinary(char& binary, const long long int& binarySize)
                 if (colorUseByte == static_cast<int>(ColorUseByteSize::Bit32UseByte)) {
                     binaryItr = getParamFromBinary(tmpColor.reserve_, *binaryItr);
                 }
-
                 if (j < info_.biWidth_) {
                     colorDatas_.push_back(tmpColor);
                 }
@@ -202,10 +202,10 @@ void BmpData::outputBmpData(std::string_view fileName)
     int colorDataSize = actualWidthByteSize * info_.biHeight_;
     totalDataSize = colorDataSize + detail::DataMinSize;
 
+    // 出力前にファイルサイズをパラメータに反映
     header_.bfSize_ = totalDataSize;
 
-
-    // バイナリデータを書き込んでいく
+    // バイナリデータに書き込んでいく
     std::ofstream ofs(fileName.data(), std::ios::binary);
     std::unique_ptr<char[]> outputData = std::make_unique<char[]>(totalDataSize);
     {

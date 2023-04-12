@@ -31,6 +31,7 @@ bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
 
     int colorUseByte = 0;
     {
+        bool checkTgaData = true;
         if (header_.bitPerPixel_ == static_cast<char>(ColorBitType::Bit24)) {
             colorUseByte = static_cast<int>(ColorUseByteSize::Bit24UseByte);
         }
@@ -39,17 +40,27 @@ bool TgaData::getParamsFromBinary(char& binary, const long long int& binarySize)
         }
         else {
             // ピクセルのビット数が24bitと32bitの時以外は対応しない
-            header_ = {};
-            return false;
+            checkTgaData = false;
+        }
+
+        // ファイルサイズと整合性が取れているか確認
+        long long int colorDataSize = header_.imageWitdth_ * header_.imageHeight_ * colorUseByte;
+        long long int totalDataSize = detail::HeaderSize + detail::FooterSize + colorDataSize;
+
+        // フッターは存在しないこともあるので、その場合のファイルサイズとも整合性をチェックする
+        if (totalDataSize != binarySize && (totalDataSize - detail::FooterSize) != binarySize) {
+            checkTgaData = false;
         }
 
         // 非圧縮フルカラーのみ対応
         if (header_.imageType_ != ImageType::FullColor) {
+            checkTgaData = false;
+        }
+        if (!checkTgaData) {
             header_ = {};
             return false;
         }
     }
-
 
     // 色データ取得処理
     long long int imageDataSize = header_.imageWitdth_ * header_.imageHeight_;
@@ -101,7 +112,7 @@ void TgaData::outputTgaData(std::string_view fileName)
     }
 
     // データサイズを計算する
-    int totalDataSize = 0;
+    long long int totalDataSize = 0;
     int colorUseByte = 0;
     {
         if (header_.bitPerPixel_ == static_cast<char>(ColorBitType::Bit24)) {
@@ -115,7 +126,7 @@ void TgaData::outputTgaData(std::string_view fileName)
             return;
         }
 
-        int colorDataSize = header_.imageWitdth_ * header_.imageHeight_ * colorUseByte;
+        long long int colorDataSize = header_.imageWitdth_ * header_.imageHeight_ * colorUseByte;
         totalDataSize = detail::HeaderSize + detail::FooterSize + colorDataSize;
     }
 
